@@ -7,16 +7,13 @@ public class RepositoryModel {
     private Repository repository;
     private String language;
 
-    public RepositoryModel(){}
-    public RepositoryModel(int watchers, Repository repository, String language) {
-        this.watchers = watchers;
-        this.repository = repository;
-        this.language = language;
+    public RepositoryModel() {
     }
 
     public int getWatchers() {
         return watchers;
     }
+
     public void setWatchers(int watchers) {
         this.watchers = watchers;
     }
@@ -24,6 +21,7 @@ public class RepositoryModel {
     public Repository getRepository() {
         return repository;
     }
+
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -31,6 +29,7 @@ public class RepositoryModel {
     public String getLanguage() {
         return language;
     }
+
     public void setLanguage(String language) {
         this.language = language;
     }

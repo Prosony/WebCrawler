@@ -4,30 +4,37 @@ import debug.LocalLog;
 
 import java.util.LinkedList;
 
-public class ThreadPool {
+public class ThreadPoolService {
 
     private LinkedList<Thread> queue = new LinkedList<>();
+
     private GetConfig config = GetConfig.getInstance();
-    private LocalLog LOG = LocalLog.getInstance();
+    private LocalLog LOG = new LocalLog();
     private int maxParallelRequests = config.getMaxParallelRequest();
     private int requestDelayMs = config.getRequestDelayMs();
 
-    public void addThread(Thread thread){
+    /**
+     * adds a thread to the pool
+     * @param thread
+     */
+    public void addThread(Thread thread) {
         queue.add(thread);
     }
 
-    public void execute(){
-
+    /**
+     * Starts threads with constraints [maxParallelRequests]
+     * and delay between startup [requestDelayMs]
+     */
+    public void execute() {
         int status = 0;
         int count = 0;
-        //        for (int count = 0; count < queue.size(); count++)
         Thread[] pool = new Thread[maxParallelRequests];
-        while (count < queue.size()){
-            if (status < maxParallelRequests){
+        while (count < queue.size()) {
+            if (status < maxParallelRequests) {
                 try {
                     Thread thread = queue.get(count);
                     thread.start();
-                    LOG.info("start thread NO: "+count);
+                    LOG.info("[ThreadPoolService][execute] start thread NO: " + count);
                     pool[status] = thread;
                     count++;
                     status++;
@@ -35,26 +42,23 @@ public class ThreadPool {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }else {
-                LOG.info("wait thread");
-                while(true){
+            } else {
+                LOG.info("[ThreadPoolService][execute] queue is full, wait for threads to complete...");
+                while (true) {
                     int threadIsDead = 0;
-                    for (int index = 0; index < pool.length; index++){
-                        if (!pool[index].isAlive()){
+                    for (int index = 0; index < pool.length; index++) {
+                        if (!pool[index].isAlive()) {
                             threadIsDead++;
-                        }else{
+                        } else {
                             threadIsDead = 0;
                         }
                     }
-                    if (threadIsDead == pool.length){
+                    if (threadIsDead == pool.length) {
                         status = 0;
                         break;
                     }
                 }
             }
         }
-//        queue.getFirst().start();
     }
-
-
 }
