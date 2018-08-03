@@ -23,20 +23,21 @@ public class CrawlerGitHub {
     private LocalLog LOG = new LocalLog();
 
     public String getDataByUsername(String url) {
-        User user = null;
         String username = new URLService().getUsername(url);
         try {
             JsonObject json = new JsonObject();
             GitHubClient client = new GitHubClient();
+            RepositoryService service = new RepositoryService(client);
+
             client.setCredentials(config.getUsername(), config.getPassword()); //authentication GitHub
             UserService serviceUser = new UserService(client);
-            user = serviceUser.getUser(username);
+
+            User user = serviceUser.getUser(username);
             json.addProperty("username", user.getLogin());
             json.addProperty("name", user.getName());
             json.addProperty("company", user.getCompany());
             json.addProperty("location", user.getLocation());
 
-            RepositoryService service = new RepositoryService(client);
             List<Repository> list = service.getRepositories(username);
             RepositoryModel model = getMostPopularRepo(list);
             String mostUsedLanguage = getMostUsedLang(list);
